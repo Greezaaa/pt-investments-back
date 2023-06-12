@@ -8,9 +8,7 @@ import { Project, ProjectImage } from './entities';
 @Module({
   controllers: [ProjectsController],
   providers: [ProjectsService],
-  imports: [
-    TypeOrmModule.forFeature([Project, ProjectImage])
-  ],
-  exports: [ProjectsService, TypeOrmModule]
+  imports: [TypeOrmModule.forFeature([Project, ProjectImage])],
+  exports: [ProjectsService, TypeOrmModule],
 })
-export class ProjectsModule { }
+export class ProjectsModule {}

@@ -5,10 +5,7 @@ import { seedData } from './data/seed-data';
 
 @Injectable()
 export class SeedService {
-
-  constructor(
-    private readonly projectsService: ProjectsService
-  ) {}
+  constructor(private readonly projectsService: ProjectsService) {}
 
   async runProjectsSeed() {
     await this.insertNewProjects();
@@ -19,10 +16,10 @@ export class SeedService {
 
     const projects = seedData.projects;
     const insertPromises = [];
-    projects.forEach( project => {
-      insertPromises.push( this.projectsService.create( project ) );
+    projects.forEach((project) => {
+      insertPromises.push(this.projectsService.create(project));
     });
-    await Promise.all( insertPromises );
+    await Promise.all(insertPromises);
     return true;
   }
 }

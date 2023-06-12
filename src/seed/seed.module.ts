@@ -7,8 +7,6 @@ import { ProjectsModule } from 'src/projects/projects.module';
 @Module({
   controllers: [SeedController],
   providers: [SeedService],
-  imports: [
-    ProjectsModule
-  ]
+  imports: [ProjectsModule],
 })
 export class SeedModule {}

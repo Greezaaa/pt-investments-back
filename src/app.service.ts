@@ -6,8 +6,7 @@ export class AppService {
     return 'Backend running!';
   }
 
-  getTest(): string { 
+  getTest(): string {
     return 'Test running!';
   }
-  
 }

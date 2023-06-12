@@ -3,17 +3,14 @@ import { Project } from '.';
 
 @Entity({ name: 'post_images' })
 export class ProjectImage {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column('text')
+  url: string;
 
-    @Column('text')
-    url: string
-
-    @ManyToOne(
-        () => Project,
-        ( postEntity ) => postEntity.images,
-        {  onDelete: 'CASCADE' }
-    )
-    project: Project
+  @ManyToOne(() => Project, (postEntity) => postEntity.images, {
+    onDelete: 'CASCADE',
+  })
+  project: Project;
 }

@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, UseGuards, Req, Headers, SetMetadata } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Headers,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IncomingHttpHeaders } from 'http';
 
@@ -12,7 +19,7 @@ import { ValidRoles } from './dto/interfaces';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   createUser(@Body() createUserDto: CreateUserDto) {
@@ -22,7 +29,7 @@ export class AuthController {
   loginUser(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
   }
-  
+
   @Get('private')
   @UseGuards(AuthGuard())
   privetRoute(
@@ -30,7 +37,6 @@ export class AuthController {
     @RawHeaders() rawHeaders: string[],
     @Headers() headers: IncomingHttpHeaders,
   ) {
-
     return {
       ok: true,
       user,
@@ -40,21 +46,14 @@ export class AuthController {
   }
 
   @Get('private2')
-  @RoleProtected(
-    ValidRoles.admin,
-    ValidRoles.superUser
-  )
+  @RoleProtected(ValidRoles.admin, ValidRoles.superUser)
   @UseGuards(AuthGuard(), UserRoleGuard)
-  privateRoute2(
-    @GetUser() user: User,
-  ) {
-
+  privateRoute2(@GetUser() user: User) {
     return {
       ok: true,
       user,
-    }
+    };
   }
-
 
   @Get('private3')
   @Auth(
@@ -64,8 +63,8 @@ export class AuthController {
   privateRoute3() {
     return {
       ok: true,
-      msg: "private3"
-    }
+      msg: 'private3',
+    };
   }
   @Get('seed-users')
   seedUsers() {
@@ -83,4 +82,3 @@ export class AuthController {
     return 'Seeding users...';
   }
 }
-

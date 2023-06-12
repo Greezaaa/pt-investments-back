@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    AuthModule, 
+    AuthModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -24,9 +24,9 @@ import { AuthModule } from './auth/auth.module';
     }),
     ProjectsModule,
     CommonModule,
-    SeedModule
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

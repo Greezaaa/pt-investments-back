@@ -3,7 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -18,8 +18,6 @@ import { ProjectImage, Project } from './entities';
 
 @Injectable()
 export class ProjectsService {
-
-
   private readonly logger = new Logger('ProjectsService');
 
   constructor(
@@ -29,22 +27,23 @@ export class ProjectsService {
     @InjectRepository(ProjectImage)
     private readonly projectImagesRepository: Repository<ProjectImage>,
 
-    private readonly dataSource: DataSource
-  ) { }
+    private readonly dataSource: DataSource,
+  ) {}
 
   async create(createProjectDto: CreateProjectDto) {
     try {
       const { images = [], ...projectDetails } = createProjectDto;
       const project = this.projectsRepository.create({
         ...projectDetails,
-        images: images.map(image => this.projectImagesRepository.create({ url: image }))
+        images: images.map((image) =>
+          this.projectImagesRepository.create({ url: image }),
+        ),
       });
       await this.projectsRepository.save(project);
       return { ...project, images };
     } catch (error) {
-      this.handleDBException(error)
+      this.handleDBException(error);
     }
-
   }
 
   async findAll(paginatorDto: Paginator) {
@@ -66,20 +65,24 @@ export class ProjectsService {
     const hasPreviousPage = offset > 0;
 
     const nextPageOffset = hasNextPage ? offset + limit : null;
-    const previousPageOffset = hasPreviousPage ? Math.max(offset - limit, 0) : null;
+    const previousPageOffset = hasPreviousPage
+      ? Math.max(offset - limit, 0)
+      : null;
 
     const response = {
       count,
       limit,
-      next: hasNextPage ? `http://localhost:3000/api/projects/?offset=${nextPageOffset}&limit=${limit}` : null,
-      previous: hasPreviousPage ? `http://localhost:3000/api/projects/?offset=${previousPageOffset}&limit=${limit}` : null,
+      next: hasNextPage
+        ? `http://localhost:3000/api/projects/?offset=${nextPageOffset}&limit=${limit}`
+        : null,
+      previous: hasPreviousPage
+        ? `http://localhost:3000/api/projects/?offset=${previousPageOffset}&limit=${limit}`
+        : null,
       projects: modifiedProjects,
     };
 
     return response;
   }
-
-
 
   async findOne(term: string) {
     let project: Project;
@@ -90,13 +93,12 @@ export class ProjectsService {
       project = await query
         .where('UPPER(title) =:title or slug=:slug', {
           title: term.toUpperCase(),
-          slug: term.toLowerCase()
+          slug: term.toLowerCase(),
         })
         .leftJoinAndSelect('project.images', 'images')
         .getOne();
     }
-    if (!project)
-      throw new NotFoundException(`Project with ${term} not found`);
+    if (!project) throw new NotFoundException(`Project with ${term} not found`);
     return project;
   }
 
@@ -106,31 +108,27 @@ export class ProjectsService {
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
-
     const { images, ...toUpdate } = updateProjectDto;
-
-
 
     const project = await this.projectsRepository.preload({
       id,
       ...toUpdate,
-    })
+    });
 
     if (!project) throw new NotFoundException(`Project with ${id} not found`);
 
-    //query runner 
+    //query runner
 
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-
     try {
       if (images) {
         await queryRunner.manager.delete(ProjectImage, { project: { id } });
-        project.images = images.map(
-          (image) => this.projectImagesRepository.create({ url: image })
+        project.images = images.map((image) =>
+          this.projectImagesRepository.create({ url: image }),
         );
       }
       await queryRunner.manager.save(project);
@@ -141,7 +139,7 @@ export class ProjectsService {
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
 
-      this.handleDBException(error)
+      this.handleDBException(error);
     }
   }
 
@@ -173,21 +171,18 @@ export class ProjectsService {
       throw new BadRequestException(error.detail);
     }
     this.logger.error(error);
-    throw new InternalServerErrorException('Unexpected error creating project, pls check server logs');
+    throw new InternalServerErrorException(
+      'Unexpected error creating project, pls check server logs',
+    );
   }
 
   async deleteAllProjects() {
     const query = this.projectsRepository.createQueryBuilder('Project');
 
     try {
-      return await query
-        .delete()
-        .where({})
-        .execute();
-
+      return await query.delete().where({}).execute();
     } catch (error) {
       this.handleDBException(error);
     }
-
   }
 }

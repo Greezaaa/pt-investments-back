@@ -1,6 +1,5 @@
 export interface JwtPayload {
-    
-    id: string;
+  id: string;
 
-    //TODO: Add the role property
+  //TODO: Add the role property
 }

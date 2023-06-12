@@ -9,7 +9,7 @@ import {
   IsArray,
   IsUUID,
 } from 'class-validator';
-import { ApiProperty }from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class InvestorDto {
   @IsString()
@@ -52,13 +52,13 @@ export class CreateProjectDto {
   @IsString()
   @IsOptional()
   slug?: string;
-  
+
   @IsOptional()
   @ApiProperty({
-    isArray: true
+    isArray: true,
   })
   investors?: InvestorDto[];
-  
+
   @IsString({ each: true })
   @IsArray()
   @IsOptional()

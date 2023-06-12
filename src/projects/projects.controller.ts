@@ -8,7 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   Query,
-  Options
+  Options,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -17,7 +17,7 @@ import { Paginator } from '../common/dto/pagination.dto';
 
 @Controller('projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) { }
+  constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
   create(@Body() createProjectDto: CreateProjectDto) {
@@ -30,7 +30,7 @@ export class ProjectsController {
   }
 
   @Get(':term')
-  findOne(@Param('term',) term: string) {
+  findOne(@Param('term') term: string) {
     return this.projectsService.findOnePlain(term);
   }
 
@@ -42,7 +42,7 @@ export class ProjectsController {
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateProjectDto: UpdateProjectDto
+    @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectsService.update(id, updateProjectDto);
   }
