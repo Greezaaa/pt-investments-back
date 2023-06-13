@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -30,6 +31,10 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
+  @Get('users')
+  findAll() {
+    return this.authService.findAll();
+  }
   @Get('private')
   @UseGuards(AuthGuard())
   privetRoute(

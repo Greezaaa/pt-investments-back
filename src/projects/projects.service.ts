@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   BadRequestException,
   Injectable,
@@ -28,7 +29,7 @@ export class ProjectsService {
     private readonly projectImagesRepository: Repository<ProjectImage>,
 
     private readonly dataSource: DataSource,
-  ) {}
+  ) { }
 
   async create(createProjectDto: CreateProjectDto) {
     try {
@@ -185,4 +186,46 @@ export class ProjectsService {
       this.handleDBException(error);
     }
   }
+
+  async showProjectsNoCompany(paginatorDto: Paginator) {
+    const { limit = 10, offset = 0 } = paginatorDto;
+    const [projects, count] = await this.projectsRepository.findAndCount({
+      take: limit,
+      skip: offset,
+      relations: {
+        images: true,
+        // investors: true
+      },
+    });
+    const modifiedProjects = projects.map((project) => {
+      const { company_name, ...projectWithoutCompany } = project;
+      return {
+        ...projectWithoutCompany,
+        images: project.images.map((image) => image.url),
+      };
+    });
+  
+    const hasNextPage = count > offset + limit;
+    const hasPreviousPage = offset > 0;
+  
+    const nextPageOffset = hasNextPage ? offset + limit : null;
+    const previousPageOffset = hasPreviousPage
+      ? Math.max(offset - limit, 0)
+      : null;
+  
+    const response = {
+      count,
+      limit,
+      next: hasNextPage
+        ? `http://localhost:3000/api/projects/?offset=${nextPageOffset}&limit=${limit}`
+        : null,
+      previous: hasPreviousPage
+        ? `http://localhost:3000/api/projects/?offset=${previousPageOffset}&limit=${limit}`
+        : null,
+      projects: modifiedProjects,
+    };
+  
+    return response;
+  }
+  
 }

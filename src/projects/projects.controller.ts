@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -14,6 +15,8 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Paginator } from '../common/dto/pagination.dto';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { ValidRoles } from '../auth/dto/interfaces/valid-roles.interfaces';
 
 @Controller('projects')
 export class ProjectsController {
@@ -26,15 +29,15 @@ export class ProjectsController {
 
   @Get()
   findAll(@Query() paginatorDto: Paginator) {
-    return this.projectsService.findAll(paginatorDto);
+    return this.projectsService.showProjectsNoCompany(paginatorDto);
   }
 
-  @Get(':term')
+  @Get('find/:term')
   findOne(@Param('term') term: string) {
     return this.projectsService.findOnePlain(term);
   }
 
-  @Get(':id/toggle-visibility')
+  @Get('find/:id/toggle-visibility')
   toggleProjectVisibility(@Param('id', ParseUUIDPipe) id: string) {
     return this.projectsService.toggleProjectVisibility(id);
   }
@@ -55,5 +58,14 @@ export class ProjectsController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.projectsService.remove(id);
+  }
+
+  @Get('prime')
+  @Auth(
+    ValidRoles.prime,
+    // ValidRoles.superUser
+  )
+  noCompany(@Query() paginatorDto: Paginator){
+    return this.projectsService.findAll(paginatorDto);
   }
 }
